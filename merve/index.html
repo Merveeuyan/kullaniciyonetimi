@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kullanıcı Listesi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input, select, table {
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      cursor: pointer;
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Kullanıcı Yönetimi</h1>
+
+  <label for="search">İsimle Ara:</label>
+  <input type="text" id="search" placeholder="İsim girin..." oninput="handleSearch()">
+
+  <label for="roleFilter">Role Göre Filtrele:</label>
+  <select id="roleFilter" onchange="handleRoleFilter()">
+    <option value="">Tümü</option>
+    <option value="Admin">Admin</option>
+    <option value="Kullanıcı">Kullanıcı</option>
+    <option value="Misafir">Misafir</option>
+  </select>
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="handleSort('name')">İsim</th>
+        <th onclick="handleSort('role')">Rol</th>
+        <th onclick="handleSort('created')">Oluşturulma Tarihi</th>
+      </tr>
+    </thead>
+    <tbody id="userTable">
+    
+    </tbody>
+  </table>
+
+  <script>
+    const users = [
+      { name: 'Ali Veli', role: 'Admin', created: '2025-01-01' },
+      { name: 'Ayşe Fatma', role: 'Kullanıcı', created: '2024-12-20' },
+      { name: 'Mehmet Can', role: 'Misafir', created: '2024-11-15' },
+      { name: 'Zeynep Kaya', role: 'Admin', created: '2025-01-10' },
+      { name: 'Kerem Yılmaz', role: 'Kullanıcı', created: '2024-10-05' }
+    ];
+
+    let filteredUsers = [...users];
+    let sortOrder = { column: '', order: 'asc' };
+
+    function renderTable(data) {
+      const tableBody = document.getElementById('userTable');
+      tableBody.innerHTML = data.map(user => `
+        <tr>
+          <td>${user.name}</td>
+          <td>${user.role}</td>
+          <td>${user.created}</td>
+        </tr>
+      `).join('');
+    }
+
+    function handleSearch() {
+      const searchValue = document.getElementById('search').value.toLowerCase();
+      filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchValue));
+      renderTable(filteredUsers);
+    }
+
+    function handleRoleFilter() {
+      const roleValue = document.getElementById('roleFilter').value;
+      filteredUsers = users.filter(user => !roleValue || user.role === roleValue);
+      renderTable(filteredUsers);
+    }
+
+    function handleSort(column) {
+      if (sortOrder.column === column) {
+        sortOrder.order = sortOrder.order === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortOrder.column = column;
+        sortOrder.order = 'asc';
+      }
+
+      filteredUsers.sort((a, b) => {
+        if (a[column] > b[column]) return sortOrder.order === 'asc' ? 1 : -1;
+        if (a[column] < b[column]) return sortOrder.order === 'asc' ? -1 : 1;
+        return 0;
+      });
+
+      renderTable(filteredUsers);
+    }
+
+    
+    renderTable(filteredUsers);
+  </script>
+
+</body>
+</html>
